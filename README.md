@@ -142,7 +142,7 @@ These 4 points need to be provided in a pre-defined order which is following.
 ### Last 2 points:
 The last two points are used to mark two points 6 feet apart in the region of interest. For example this could be a person's height (easier to mark on the frame)
 
-<img src="assets/P_Bird.gif" width="300"/> <img src="assets/P_Detect.gif" width="600"/>
+<img src="assets/P_Bird.gif" width="200" height="200"/> <img src="assets/P_Detect.gif" width="600"/>
 
 ## Demo
 You can input a raw video and get the demo video by running src/demo.py and get the mp4 format of the demo video:
