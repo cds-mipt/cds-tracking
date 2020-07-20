@@ -1,9 +1,9 @@
 # cds-tracking
 
-### описание будет добавлено в ближайшее время
+### Описание будет добавлено в ближайшее время
 
 # FairMOT
-This repesitory is an implementation of FairMOT method: a baseline for one-shot multi oject tracking in addition to Bird eye view visulation of the output tracks on 2D plane.
+This repesitory is an implementation of FairMOT method: a baseline for one-shot multi object tracking in addition to Bird eye view visulation of the output tracks on 2D plane.
 ![](assets/pipeline.png)
 > [**A Simple Baseline for Multi-Object Tracking**](http://arxiv.org/abs/2004.01888),            
 > Yifu Zhang, Chunyu Wang, Xinggang Wang, Wenjun Zeng, Wenyu Liu,        
