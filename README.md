@@ -1,26 +1,14 @@
 # cds-tracking
 
-### Описание будет добавлено в ближайшее время
+## Описание будет добавлено в ближайшее время
 
-# FairMOT
-This repesitory is an implementation of FairMOT method: a baseline for one-shot multi object tracking in addition to Bird eye view visulation of the output tracks on 2D plane.
+This repesitory is an implementation of FairMOT method: a baseline for one-shot multi object tracking in addition to Bird eye view visulization of the output tracks on 2D plane.
 ![](assets/pipeline.png)
 > [**A Simple Baseline for Multi-Object Tracking**](http://arxiv.org/abs/2004.01888),            
 > Yifu Zhang, Chunyu Wang, Xinggang Wang, Wenjun Zeng, Wenyu Liu,        
 > *arXiv technical report ([arXiv 2004.01888](http://arxiv.org/abs/2004.01888))*
 
-## Tracking performance
-### Results on MOT challenge test set
-| Dataset    |  MOTA | IDF1 | IDS | MT | ML | FPS |
-|--------------|-----------|--------|-------|----------|----------|--------|
-|2DMOT15  | 59.0 | 62.2 |  582 | 45.6% | 11.5% | 30.5 |
-|MOT16       | 68.7 | 70.4 | 953 | 39.5% | 19.0% | 25.9 |
-|MOT17       | 67.5 | 69.8 | 2868 | 37.7% | 20.8% | 25.9 |
-|MOT20       | 58.7 | 63.7 | 6013 | 66.3% | 8.5% | 13.2 |
-
- All of the results are obtained on the [MOT challenge](https://motchallenge.net) evaluation server under the “private detector” protocol. We rank first among all the trackers on 2DMOT15, MOT17 and the recently released (2020.02.29) MOT20. Note that our IDF1 score remarkably outperforms other one-shot MOT trackers by more than **10 points**. The tracking speed of the entire system can reach up to **30 FPS**.
-
-### Video demos on MOT challenge test set
+## Video demos on MOT challenge test set
 <img src="assets/MOT15.gif" width="400"/>   <img src="assets/MOT16.gif" width="400"/>
 <img src="assets/MOT17.gif" width="400"/>   <img src="assets/MOT20.gif" width="400"/>
 
@@ -168,3 +156,14 @@ cd src
 python demo.py mot --load_model ../models/all_hrnet_v2_w18.pth --arch hrnet_18 --reid_dim 128 --conf_thres 0.4
 ```
 --conf_thres can be set from 0.3 to 0.7 depending on your own videos.
+
+## Tracking performance
+### Results on MOT challenge test set
+| Dataset    |  MOTA | IDF1 | IDS | MT | ML | FPS |
+|--------------|-----------|--------|-------|----------|----------|--------|
+|2DMOT15  | 59.0 | 62.2 |  582 | 45.6% | 11.5% | 30.5 |
+|MOT16       | 68.7 | 70.4 | 953 | 39.5% | 19.0% | 25.9 |
+|MOT17       | 67.5 | 69.8 | 2868 | 37.7% | 20.8% | 25.9 |
+|MOT20       | 58.7 | 63.7 | 6013 | 66.3% | 8.5% | 13.2 |
+
+ All of the results are obtained on the [MOT challenge](https://motchallenge.net) evaluation server under the “private detector” protocol. We rank first among all the trackers on 2DMOT15, MOT17 and the recently released (2020.02.29) MOT20. Note that our IDF1 score remarkably outperforms other one-shot MOT trackers by more than **10 points**. The tracking speed of the entire system can reach up to **30 FPS**.
