@@ -21,7 +21,26 @@ import datasets.dataset.jde as datasets
 
 from tracking_utils.utils import mkdir_if_missing
 from opts import opts
+#=======================================
+from aux_functions import *
+from collections import defaultdict
 
+
+mouse_pts = []
+
+def get_mouse_points(event, x, y, flags, param):
+    # Used to mark 4 points on the frame zero of the video that will be warped
+    # Used to mark 2 points on the frame zero of the video that are 6 feet away
+    global mouseX, mouseY, mouse_pts
+    if event == cv2.EVENT_LBUTTONDOWN:
+        mouseX, mouseY = x, y
+        #cv2.circle(image, (x, y), 10, (0, 255, 255), 10)   # TODO fix this bug ()
+        if "mouse_pts" not in globals():
+            mouse_pts = []
+        mouse_pts.append((x, y))
+        print("Point detected")
+        print(mouse_pts)
+#=======================================
 
 def write_results(filename, results, data_type):
     if data_type == 'mot':
@@ -83,7 +102,7 @@ def eval_seq(opt, dataloader, data_type, result_filename, save_dir=None, show_im
         frame_id += 1
     # save results
     write_results(result_filename, results, data_type)
-    return frame_id, timer.average_time, timer.calls
+    return frame_id, timer.average_time, timer.calls, results
 
 
 def main(opt, data_root='/data/MOT16/train', det_root=None, seqs=('MOT16-05',), exp_name='demo',
@@ -104,7 +123,7 @@ def main(opt, data_root='/data/MOT16/train', det_root=None, seqs=('MOT16-05',), 
         result_filename = os.path.join(result_root, '{}.txt'.format(seq))
         meta_info = open(os.path.join(data_root, seq, 'seqinfo.ini')).read()
         frame_rate = int(meta_info[meta_info.find('frameRate') + 10:meta_info.find('\nseqLength')])
-        nf, ta, tc = eval_seq(opt, dataloader, data_type, result_filename,
+        nf, ta, tc, results = eval_seq(opt, dataloader, data_type, result_filename,
                               save_dir=output_dir, show_image=show_image, frame_rate=frame_rate)
         n_frame += nf
         timer_avgs.append(ta)
@@ -118,6 +137,142 @@ def main(opt, data_root='/data/MOT16/train', det_root=None, seqs=('MOT16-05',), 
             output_video_path = osp.join(output_dir, '{}.mp4'.format(seq))
             cmd_str = 'ffmpeg -f image2 -i {}/%05d.jpg -c:v copy {}'.format(output_dir, output_video_path)
             os.system(cmd_str)
+
+            #=======================================
+            input_video = output_video_path
+
+            # Get video handle
+            cap = cv2.VideoCapture(input_video)
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            fps = int(cap.get(cv2.CAP_PROP_FPS))
+
+            scale_w = 1.2 / 2
+            scale_h = 4 / 2
+
+            SOLID_BACK_COLOR = (41, 41, 41)   #Change Background
+            # Setuo video writer
+            fourcc = cv2.VideoWriter_fourcc(*"XVID")
+            output_movie = cv2.VideoWriter("P_detect.avi", fourcc, fps, (width, height))
+            bird_movie = cv2.VideoWriter("P_bird.avi", fourcc, fps, (int(width * scale_w), int(height * scale_h))
+            )
+            # Initialize necessary variables
+            frame_num = 0
+            total_pedestrians_detected = 0
+            total_six_feet_violations = 0
+            total_pairs = 0
+            abs_six_feet_violations = 0
+            pedestrian_per_sec = 0
+            sh_index = 1
+            sc_index = 1
+
+            cv2.namedWindow('image')
+            # cv2.setMouseCallback("image", get_mouse_points)
+            num_mouse_points = 0
+            first_frame_display = True
+
+            # Process each frame, until end of video
+            while cap.isOpened():
+                frame_num += 1
+                ret, frame = cap.read()
+
+                if not ret:
+                    print("end of the video file...")
+                    break
+
+                frame_h = frame.shape[0]
+                frame_w = frame.shape[1]
+
+                if frame_num == 1:
+                    # Ask user to mark parallel points and two points 6 feet apart. Order bl, br, tr, tl, p1, p2
+                    image = frame
+                    cv2.namedWindow('image')
+                    cv2.setMouseCallback('image', get_mouse_points)
+                    while True:
+                        image = frame
+                        cv2.imshow('image', image)
+                        cv2.waitKey(1)
+                        if len(mouse_pts) == 7:
+                            cv2.destroyWindow('image')
+                            break
+                        first_frame_display = False
+                    four_points = mouse_pts
+
+                    # Get perspective
+                    M, Minv = get_camera_perspective(frame, four_points[0:4])
+                    pts = src = np.float32(np.array([four_points[4:]]))
+                    warped_pt = cv2.perspectiveTransform(pts, M)[0]   # Performs the perspective matrix transformation of vectors.
+
+                    d_thresh = np.sqrt(
+                        (warped_pt[0][0] - warped_pt[1][0]) ** 2
+                        + (warped_pt[0][1] - warped_pt[1][1]) ** 2
+                    )
+
+                    corners = src = np.float32(np.array([four_points[0:4]]))
+                    wraped_corners = cv2.perspectiveTransform(corners, M)[0]
+                    
+                    # Calculating the real distance between the polygon points 
+                    H_Length = np.sqrt(
+                        (wraped_corners[0][0] - wraped_corners[1][0]) ** 2
+                        + (wraped_corners[0][1] - wraped_corners[1][1]) ** 2
+                    )
+                    H_Meter = H_Length * 1.8288 / d_thresh  #don't forget the scale
+
+                    V_Length = np.sqrt(
+                        (wraped_corners[0][0] - wraped_corners[2][0]) ** 2
+                        + (wraped_corners[0][1] - wraped_corners[2][1]) ** 2
+                    )
+                    V_Meter = V_Length * 1.8288 / d_thresh
+
+                    bird_image = np.zeros(
+                        (int(frame_h * scale_h), int(frame_w * scale_w), 3), np.uint8
+                    )
+                    ids_previous_frame=[]
+                    ids_pre_previous_frame = []
+                    Track_ID_List = defaultdict(list)
+                    track_image = np.zeros(
+                        (int(frame_h * scale_h), int(frame_w * scale_w), 3), np.uint8
+                    )
+                    #bird_image = track_image
+
+                    bird_image[:] = SOLID_BACK_COLOR
+                    track_image[:] = SOLID_BACK_COLOR
+                    pedestrian_detect = frame
+
+                print("Processing frame: ", frame_num)
+
+                # draw polygon of ROI
+                pts = np.array(
+                    [four_points[0], four_points[1], four_points[3], four_points[2]], np.int32
+                )
+                cv2.polylines(frame, [pts], True, (0, 255, 255), thickness=3)
+                # Detect person and bounding boxes using FairMOT 
+                (frr, pedestrian_boxes, id_pedestrians) =  results[frame_num]
+                num_pedestrians = len(id_pedestrians)
+                if len(pedestrian_boxes) > 0:
+                    pedestrian_detect = frame 
+                    warped_pts, bird_image, track_image, Track_ID_List = plot_points_on_bird_eye_view(
+                        frame, track_image, pedestrian_boxes, M, scale_w, scale_h, id_pedestrians , Track_ID_List, ids_previous_frame, ids_pre_previous_frame
+                    )
+                ids_pre_previous_frame = ids_previous_frame
+                ids_previous_frame = id_pedestrians
+ 
+                last_h = 50
+                text = "Estimated Area: " + str(round(H_Meter, 2)) + " * " + str(round(V_Meter)) + " M"
+                bird_image, last_h = put_text(bird_image, text, text_offset_y=last_h)
+
+                text = "# Pedestrians: " + str(num_pedestrians).zfill(2)
+                bird_image, last_h = put_text(bird_image, text, text_offset_y=last_h)
+
+                #cv2.imshow("Cam", pedestrian_detect)
+                #filename1 = 'pedestrian_detect'+str(frame_num).zfill(5)+'.jpg'    
+                #cv2.imwrite(filename1, pedestrian_detect)
+                cv2.waitKey(1)
+                output_movie.write(pedestrian_detect)
+                filename2 = 'bird_image'+str(frame_num).zfill(5)+'.jpg'
+                cv2.imwrite(filename2, bird_image)
+                bird_movie.write(bird_image)
+            #=======================================
 
     timer_avgs = np.asarray(timer_avgs)
     timer_calls = np.asarray(timer_calls)
