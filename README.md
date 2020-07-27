@@ -60,7 +60,7 @@ python gen_labels_20.py
 
 DLA-34 COCO pretrained model: [DLA-34 official](https://drive.google.com/file/d/1pl_-ael8wERdUREEnaIfqOV_VF2bEVRT/view).
 HRNetV2 ImageNet pretrained model: [HRNetV2-W18 official](https://1drv.ms/u/s!Aus8VCZ_C_33cMkPimlmClRvmpw), [HRNetV2-W32 official](https://1drv.ms/u/s!Aus8VCZ_C_33dYBMemi9xOUFR0w).
-After downloading, you should put the pretrained models in the following structure:
+После загрузки вы должны поместить Pretrained model в следующую структуру:
 ```
 ${FAIRMOT_ROOT}
    └——————models
@@ -70,8 +70,8 @@ ${FAIRMOT_ROOT}
 ```
 * **Baseline model**
 
-Our baseline FairMOT model can be downloaded here: DLA-34: [[Google]](https://drive.google.com/open?id=1udpOPum8fJdoEQm6n0jsIgMMViOMFinu). HRNetV2_W18: [[Google]](https://drive.google.com/open?id=182EHCOSzVVopvAqAXN5o6XHX4PEyLjZT).
-After downloading, you should put the baseline model in the following structure:
+Базовую модель FairMOT можно скачать здесь: DLA-34: [[Google]](https://drive.google.com/open?id=1udpOPum8fJdoEQm6n0jsIgMMViOMFinu). HRNetV2_W18: [[Google]](https://drive.google.com/open?id=182EHCOSzVVopvAqAXN5o6XHX4PEyLjZT).
+После загрузки вы должны поместить базовую модель в следующую структуру:
 ```
 ${FAIRMOT_ROOT}
    └——————models
@@ -80,28 +80,28 @@ ${FAIRMOT_ROOT}
            └——————...
 ```
 
-## Training
-* Download the training data
-* Change the dataset root directory 'root' in src/lib/cfg/data.json and 'data_dir' in src/lib/opts.py
-* Run:
+## Обучение
+* Загрузите тренировочные данные.
+* Измените дерикторий набора данных 'root' в src/lib/cfg/data.json и 'data_dir' в src/lib/opts.py
+* Запустите:
 ```
 sh experiments/all_dla34.sh
 ```
 
-## Tracking
-* The default settings run tracking on the validation dataset from 2DMOT15. Using the DLA-34 baseline model, you can run:
+## Отслеживание
+* Настройки по умолчанию запускают отслеживание для набора данных проверки из 2DMOT15. Используя базовую модель DLA-34, вы можете запустить:
 ```
 cd src
 python track.py mot --load_model ../models/all_dla34.pth --conf_thres 0.6
 ```
-to see the tracking results (76.1 MOTA using the DLA-34 baseline model). You can also set save_images=True in src/track.py to save the visualization results of each frame. 
+чтобы увидеть результаты отслеживания (76.1 MOTA с использованием базовой модели DLA-34). Вы также можете выбрать save_images=True в src/track.py для сохранения результатов визуализации каждого кадра. 
 
-Using the HRNetV2-W18 baseline model, you can run:
+Используя базовую модель HRNetV2-W18, вы можете запустить:
 ```
 cd src
 python track.py mot --load_model ../models/all_hrnet_v2_w18.pth --conf_thres 0.6 --arch hrnet_18 --reid_dim 128
 ```
-to see the tracking results (76.6 MOTA using the HRNetV2-W18 baseline model).
+чтобы увидеть результаты отслеживания (76.6 MOTA с использованием базовой модели HRNetV2-W18).
 
 * To get the txt results of the test set of MOT16 or MOT17, you can run:
 ```
