@@ -1,8 +1,9 @@
 # cds-tracking
 
-## Описание будет добавлено в ближайшее время
+## Описание:
 
-This repository is an implementation of FairMOT method: a baseline for one-shot multi-object tracking in addition to Bird eye view visualization of the output tracks on 2D plane.
+Этот репозиторий является реализацией метода FairMOT: базовая линия для одноэтапного отслеживания нескольких объектов в дополнение к Bird-eye визуализации выходных треков в 2D-плоскости.
+
 ![](assets/pipeline.png)
 > [**A Simple Baseline for Multi-Object Tracking**](http://arxiv.org/abs/2004.01888),            
 > Yifu Zhang, Chunyu Wang, Xinggang Wang, Wenjun Zeng, Wenyu Liu,        
@@ -13,9 +14,9 @@ This repository is an implementation of FairMOT method: a baseline for one-shot 
 <img src="assets/MOT17.gif" width="400"/>   <img src="assets/MOT20.gif" width="400"/>
 
 
-## Installation
-* Clone this repo in your ${FAIRMOT_ROOT}
-* Install dependencies. Python 3.7 and pytorch >= 1.2.0 was used during development.
+## Установка
+* Клонируйте этот репозиторий в свой ${FAIRMOT_ROOT}
+* Установите зависимости. При разработке использовался Python 3.7 и pytorch >= 1.2.0.
 ```
 conda create -n FairMOT
 conda activate FairMOT
@@ -24,14 +25,14 @@ cd ${FAIRMOT_ROOT}
 pip install -r requirements.txt
 cd src/lib/models/networks/DCNv2_new sh make.sh
 ```
-* [DCNv2](https://github.com/CharlesShang/DCNv2) is used in the backbone network and more details can be found in their repo. 
-* In order to run the code for demos, you also need to install [ffmpeg](https://www.ffmpeg.org/).
+* [DCNv2](https://github.com/CharlesShang/DCNv2) используется в основной сети и более подробную информацию можно найти в их отчете. 
+* Чтобы запустить код для демо-версий, вам также необходимо установить [ffmpeg](https://www.ffmpeg.org/).
 
-## Data preparation
+## Подготовка данных
 
-We use the same training data as [JDE](https://github.com/Zhongdao/Towards-Realtime-MOT). Please refer to their [DATA ZOO](https://github.com/Zhongdao/Towards-Realtime-MOT/blob/master/DATASET_ZOO.md) to download and prepare all the training data including Caltech Pedestrian, CityPersons, CUHK-SYSU, PRW, ETHZ, MOT17 and MOT16. 
+Мы используем те же данные обучения, как и [JDE](https://github.com/Zhongdao/Towards-Realtime-MOT). Пожалуйста, обратитесь к их [DATA ZOO](https://github.com/Zhongdao/Towards-Realtime-MOT/blob/master/DATASET_ZOO.md) чтобы загрузить и подготовить все данные обучения, включая Caltech Pedestrian, CityPersons, CUHK-SYSU, PRW, ETHZ, MOT17 и MOT16.
 
-[2DMOT15](https://motchallenge.net/data/2D_MOT_2015/) and [MOT20](https://motchallenge.net/data/MOT20/) can be downloaded from the official webpage of MOT challenge. After downloading, you should prepare the data in the following structure:
+[2DMOT15](https://motchallenge.net/data/2D_MOT_2015/) и [MOT20](https://motchallenge.net/data/MOT20/) можно скачать с официальной веб-страницы MOT challenge. После загрузки вы должны подготовить данные в следующей структуре:
 ```
 MOT15
    |——————images
@@ -46,13 +47,13 @@ MOT20
    └——————labels_with_ids
             └——————train(empty)
 ```
-Then, you can change the seq_root and label_root in src/gen_labels_15.py and src/gen_labels_20.py and run:
+Затем вы можете изменить seq_root и label_root в src/gen_labels_15.py и еще src/gen_labels_20.py и запустите:
 ```
 cd src
 python gen_labels_15.py
 python gen_labels_20.py
 ```
-to generate the labels of 2DMOT15 and MOT20. The seqinfo.ini files of 2DMOT15 can be downloaded here [[Google]](https://drive.google.com/open?id=1kJYySZy7wyETH4fKMzgJrYUrTfxKlN1w).
+для генерации меток 2DMOT15 и MOT20. Seqinfo.ini файлы 2DMOT15 можно скачать здесь [[Google]](https://drive.google.com/open?id=1kJYySZy7wyETH4fKMzgJrYUrTfxKlN1w).
 
 ## Pretrained models and baseline model
 * **Pretrained models**
