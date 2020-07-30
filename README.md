@@ -103,20 +103,20 @@ python track.py mot --load_model ../models/all_hrnet_v2_w18.pth --conf_thres 0.6
 ```
 чтобы увидеть результаты отслеживания (76.6 MOTA с использованием базовой модели HRNetV2-W18).
 
-* To get the txt results of the test set of MOT16 or MOT17, you can run:
+* Чтобы получить txt-результаты тестового набора MOT16 или не MOT17, вы можете запустить:
 ```
 cd src
 python track.py mot --test_mot17 True --load_model ../models/all_dla34.pth --conf_thres 0.4
 python track.py mot --test_mot16 True --load_model ../models/all_dla34.pth --conf_thres 0.4
 ```
-and send the txt files to the [MOT challenge](https://motchallenge.net) evaluation server to get the results. (You can get the SOTA results 67.5 MOTA on MOT17 test set using the baseline model 'all_dla34.pth'.)
+и отправьте txt-файлы в [MOT challenge](https://motchallenge.net) оценочный сервер для получения результатов. ((Вы можете получить общие результаты 67.5 MOTA на тестовом наборе MOT17, используя базовую модель 'all_dla34.pth'.)
 
-* To get the SOTA results of 2DMOT15 and MOT20, you need to finetune the baseline model on the specific dataset because our training set do not contain them. You can run:
+* Чтобы получить общие результаты 2DMOT15, и MOT20, вам нужно точно настроить базовую модель на конкретном наборе данных, потому что наш обучающий набор их не содержит. Вы можете запустить:
 ```
 sh experiments/ft_mot15_dla34.sh
 sh experiments/ft_mot20_dla34.sh
 ```
-and then run the tracking code:
+а затем запустите код отслеживания:
 ```
 cd src
 python track.py mot --test_mot15 True --load_model your_mot15_model.pth --conf_thres 0.3
@@ -129,19 +129,19 @@ python track.py mot --test_mot20 True --load_model ../models/mot20_dla34.pth --r
 After evaluating on MOT challenge server, you can get 58.7 MOTA on MOT20 test set using the model 'mot20_dla34.pth'.
 
 ## Bird Eye View for tracks:
-After running track_birdeye_vis.py, a window of the first frame in the video will open. At this point the code expects the user to mark 6 points by clicking appropriate positions on the frame.
+После запуска track_birdeye_vis.py, откроется окно первого кадра в видео. В этот момент код ожидает, что пользователь отметит 6 точек, щелкнув соответствующие позиции на кадре.
 
-### First 4 points:
-The first 4 among the 6 required points are used to mark the Region of Interest (ROI) where you want to monitor. Moreover, the lines marked by these points should be parallel lines in real world as seen from above. For example these lines could be the curbs of the road.
-These 4 points need to be provided in a pre-defined order which is following.
+### Первые 4 точки:
+Первые 4 из 6 необходимых точек используются для обозначения области интереса (ROI), где вы хотите осуществлять мониторинг. Более того, линии, отмеченные этими точками, должны быть параллельными линиями в реальном мире, как видно сверху. Например, эти линии могут быть бордюрами дороги.
+Эти 4 пункта должны быть представлены в заранее определенном порядке, который является следующим.
 
-* __Point1 (bl)__: Bottom left
-* __Point2 (br)__: Bottom right
-* __Point3 (tl)__: Top left
-* __Point4 (tr)__: Top right
+* __Point1 (bl)__: внизу слева
+* __Point2 (br)__: внизу справа
+* __Point3 (tl)__: вверху слева
+* __Point4 (tr)__: вверху справа
 
-### Last 2 points:
-The last two points are used to mark two points 6 feet apart in the region of interest. For example this could be a person's height (easier to mark on the frame)
+### Последние 2 балла:
+Последние две точки используются для обозначения двух точек на расстоянии 6 футов друг от друга в интересующей области. Например, это может быть рост человека (легче отметить на кадре)
 
 <img src="assets/P_Bird.gif" width="225" height="240"/> <img src="assets/KITTI-13.gif" width="580" height="240"/>
 
